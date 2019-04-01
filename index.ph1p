@@ -1,0 +1,173 @@
+<?php
+/**
+ * @version		$Id: index.php $
+ * @package     Joomla.Site
+ * @subpackage  Templates.beez3
+ *
+ * @copyright   Copyright (C) 2005 - 2019 Open Source Matters, Inc. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
+// No direct access.
+defined('_JEXEC') or die;
+
+/** @var JDocumentHtml $this */
+
+JLoader::import('joomla.filesystem.file');
+
+// Check modules
+$showRightColumn = ($this->countModules('position-3') or $this->countModules('position-6') or $this->countModules('position-8'));
+$showbottom      = ($this->countModules('position-9') or $this->countModules('position-10') or $this->countModules('position-11'));
+$showleft        = ($this->countModules('position-4') or $this->countModules('position-7') or $this->countModules('position-5'));
+
+if ($showRightColumn === false && $showleft === false)
+{
+	$showno = 0;
+}
+
+JHtml::_('behavior.framework', true);
+
+// Get params
+$color          = $this->params->get('templatecolor');
+$logo           = $this->params->get('logo');
+$navposition    = $this->params->get('navposition');
+$headerImage    = $this->params->get('headerImage');
+$config         = JFactory::getConfig();
+$bootstrap      = explode(',', $this->params->get('bootstrap'));
+$option         = JFactory::getApplication()->input->getCmd('option', '');
+
+// Output as HTML5
+$this->setHtml5(true);
+
+if (in_array($option, $bootstrap))
+{
+	// Load optional rtl Bootstrap css and Bootstrap bugfixes
+	JHtml::_('bootstrap.loadCss', true, $this->direction);
+}
+
+// Add stylesheets
+JHtml::_('stylesheet', 'templates/system/css/system.css', array('version' => 'auto'));
+JHtml::_('stylesheet', 'position.css', array('version' => 'auto', 'relative' => true));
+JHtml::_('stylesheet', 'layout.css', array('version' => 'auto', 'relative' => true));
+JHtml::_('stylesheet', 'print.css', array('version' => 'auto', 'relative' => true), array('media' => 'print'));
+JHtml::_('stylesheet', 'general.css', array('version' => 'auto', 'relative' => true));
+JHtml::_('stylesheet', htmlspecialchars($color, ENT_COMPAT, 'UTF-8') . '.css', array('version' => 'auto', 'relative' => true));
+
+if ($this->direction === 'rtl')
+{
+	JHtml::_('stylesheet', 'template_rtl.css', array('version' => 'auto', 'relative' => true));
+	JHtml::_('stylesheet', htmlspecialchars($color, ENT_COMPAT, 'UTF-8') . '_rtl.css', array('version' => 'auto', 'relative' => true));
+}
+
+if ($color === 'image')
+{
+	$this->addStyleDeclaration("
+	.logoheader {
+		background: url('" . $this->baseurl . "/" . htmlspecialchars($headerImage) . "') no-repeat right;
+	}
+	body {
+		background: " . $this->params->get('backgroundcolor') . ";
+	}");
+}
+
+JHtml::_('stylesheet', 'ie7only.css', array('version' => 'auto', 'relative' => true, 'conditional' => 'IE 7'));
+
+// Check for a custom CSS file
+JHtml::_('stylesheet', 'user.css', array('version' => 'auto', 'relative' => true));
+
+JHtml::_('bootstrap.framework');
+
+// Add template scripts
+JHtml::_('script', 'templates/' . $this->template . '/javascript/md_stylechanger.js', array('version' => 'auto'));
+JHtml::_('script', 'templates/' . $this->template . '/javascript/hide.js', array('version' => 'auto'));
+JHtml::_('script', 'templates/' . $this->template . '/javascript/respond.src.js', array('version' => 'auto'));
+JHtml::_('script', 'templates/' . $this->template . '/javascript/template.js', array('version' => 'auto'));
+
+// Check for a custom js file
+JHtml::_('script', 'templates/' . $this->template . '/javascript/user.js', array('version' => 'auto'));
+
+require __DIR__ . '/jsstrings.php';
+
+// Add html5 shiv
+JHtml::_('script', 'jui/html5.js', array('version' => 'auto', 'relative' => true, 'conditional' => 'lt IE 9'));
+?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $this->language; ?>" lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
+<head>
+	<jdoc:include type="head" />
+	<!-- The following line loads the template CSS file located in the template folder. -->
+	<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/template.css" type="text/css" />
+	
+	<!-- The following line loads the template JavaScript file located in the template folder. It's blank by default. -->
+	<script type="text/javascript" src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/js/CreateHTML5Elements.js"></script>
+	<script type="text/javascript" src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/js/jquery-1.4.4.min.js"></script>
+	<script type="text/javascript">jQuery.noConflict();</script>
+	<script type="text/javascript" src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/js/sgmenu.js"></script>
+
+
+</head>
+<body class="page_bg">
+	<div class="wrapper">
+	<header>
+		<table cellpadding="0" cellspacing="0">
+			<tr><td>
+				<h1><a href="<?php echo $this->baseurl ?>"><?php echo $app->getCfg('sitename'); ?></a></h1>
+			</td></tr>
+		</table>		
+		
+		<div class="top-menu">
+			<div id="sgmenu">
+				<jdoc:include type="modules" name="menuload" />
+			</div>
+		</div>
+			
+		<div id="search">
+			<jdoc:include type="modules" name="position-0" />
+		</div>
+	</header>
+	<section id="content">
+		<?php if( ($this->countModules('position-7')) and ($this->countModules('position-4')) ) : ?>
+		<div class="maincol">			 	
+		<?php elseif( !$this->countModules('position-7') and ($this->countModules('position-4') ) ) : ?>
+		<div class="maincol_w_left">
+		<?php elseif( $this->countModules('position-7') and (!$this->countModules('position-4') ) ) : ?>
+		<div class="maincol_w_right">
+		<?php else: ?>
+		<div class="maincol_full">
+		<?php endif; ?>
+		
+		<?php if( $this->countModules('position-7') ) : ?>
+			<div class="leftcol">
+				<jdoc:include type="modules" name="position-7" style="rounded"/>
+			</div>
+			<?php endif; ?>
+			
+				<div class="cont">
+				
+					<?php if ($this->getBuffer('message')) : ?>
+						<div class="error">
+							<jdoc:include type="message" />
+						</div>
+					<?php endif; ?>
+				
+					<jdoc:include type="component" />
+				</div>
+			
+		<?php if( $this->countModules('position-4') ) : ?>
+			<div class="rightcol">
+				<jdoc:include type="modules" name="position-4" style="rounded"/>
+			</div>
+		<?php endif; ?>
+		<div class="clr"></div>
+		</div>
+	</section>
+	
+	</div>
+	<footer>
+		<div class="footer-bg">
+			<p style="text-align:center;"><?php $sg = ''; include "templates.php"; ?></p>
+		</div>
+	</footer>
+	
+</body>
+</html>
