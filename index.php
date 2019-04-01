@@ -1,17 +1,12 @@
 <?php
 
-/*DS wurde in Joomla3.0 entfernt. Dieses Hack beseitigt die entsprechend Fehlermeldung.*/
-/* BEGIN: Define DS */
-JLoader::import( "joomla.version" );
-$version = new JVersion();
-if (!version_compare( $version->RELEASE, "2.5", "<=")):
-   if (!defined("DS")):
-      define("DS", DIRECTORY_SEPARATOR);
-   endif;
-endif;
-/* END: Define DS */
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
+
+
+$app  = JFactory::getApplication();
+$itemid   = $app->input->getCmd('Itemid', '');
+$sitename = htmlspecialchars($app->get('sitename'), ENT_QUOTES, 'UTF-8');
 ?>
 
 <!DOCTYPE html>
@@ -28,7 +23,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 	<header>
 		<table cellpadding="0" cellspacing="0">
 			<tr><td>
-				<h1><a href="<?php echo $this->baseurl ?>">Kunstkalender</a></h1>
+                        <h1><a href="<?php echo $this->baseurl; ?>"><?php echo $sitename;?></a></h1>
 			</td></tr>
 		</table>		
 		
@@ -43,19 +38,19 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 		</div>
 	</header>
 	<section id="content">
-		<?php if( ($this->countModules('position-7')) and ($this->countModules('position-4')) ) : ?>
+		<?php if( ($this->countModules('left')) and ($this->countModules('position-4')) ) : ?>
 		<div class="maincol">			 	
-		<?php elseif( !$this->countModules('position-7') and ($this->countModules('position-4') ) ) : ?>
+		<?php elseif( !$this->countModules('left') and ($this->countModules('position-4') ) ) : ?>
 		<div class="maincol_w_left">
-		<?php elseif( $this->countModules('position-7') and (!$this->countModules('position-4') ) ) : ?>
+		<?php elseif( $this->countModules('left') and (!$this->countModules('position-4') ) ) : ?>
 		<div class="maincol_w_right">
 		<?php else: ?>
 		<div class="maincol_full">
 		<?php endif; ?>
 		
-		<?php if( $this->countModules('position-7') ) : ?>
+		<?php if( $this->countModules('left') ) : ?>
 			<div class="leftcol">
-				<jdoc:include type="modules" name="position-7" style="rounded"/>
+				<jdoc:include type="modules" name="left" style="rounded"/>
 			</div>
 			<?php endif; ?>
 			
@@ -81,9 +76,11 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 	
 	</div>
 	<footer>
-		<div class="footer-bg">
-			<p style="text-align:center;"><?php $sg = ''; include "templates.php"; ?></p>
-		</div>
+		<?php if( $this->countModules('footer') ) : ?>
+			<div class="footer-bg">
+				<jdoc:include type="modules" name="footer" style="rounded"/>
+			</div>
+			<?php endif; ?>
 	</footer>
 	
 </body>
